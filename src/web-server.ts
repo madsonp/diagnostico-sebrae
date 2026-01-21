@@ -122,14 +122,16 @@ app.get('/api/templates/:nome', async (req, res) => {
   }
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(chalk.blue('\n╔═══════════════════════════════════════════════════════════╗'));
-  console.log(chalk.blue('║     SERVIDOR WEB INICIADO - DIAGNÓSTICO SEBRAE           ║'));
-  console.log(chalk.blue('╚═══════════════════════════════════════════════════════════╝\n'));
-  console.log(chalk.green(`🌐 Abra seu navegador em: ${chalk.bold(`http://localhost:${PORT}`)}\n`));
-  console.log(chalk.gray('Pressione Ctrl+C para encerrar o servidor\n'));
-});
+// Função para iniciar o servidor
+export function startServer() {
+  app.listen(PORT, () => {
+    console.log(chalk.blue('\n╔═══════════════════════════════════════════════════════════╗'));
+    console.log(chalk.blue('║     SERVIDOR WEB INICIADO - DIAGNÓSTICO SEBRAE           ║'));
+    console.log(chalk.blue('╚═══════════════════════════════════════════════════════════╝\n'));
+    console.log(chalk.green(`🌐 Abra seu navegador em: ${chalk.bold(`http://localhost:${PORT}`)}\n`));
+    console.log(chalk.gray('Pressione Ctrl+C para encerrar o servidor\n'));
+  });
+}
 
 // Fechar navegador ao encerrar servidor
 process.on('SIGINT', async () => {
