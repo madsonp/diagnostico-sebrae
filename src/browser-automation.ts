@@ -142,15 +142,24 @@ export class SebraeAutomation {
 
       // Fechar modal para voltar à tela inicial
       try {
-        const btnFechar = await this.page.waitForSelector('.modal-footer button[data-dismiss="modal"]', { timeout: 2000 });
-        if (btnFechar) {
-          await btnFechar.click();
-          await this.page.waitForTimeout(800);
+        // Tentar múltiplas estratégias para fechar o modal
+        // Estratégia 1: Clicar no botão "Fechar" pelo texto
+        try {
+          await this.page.click('button:has-text("Fechar")', { timeout: 2000 });
+          await this.page.waitForTimeout(1000);
+        } catch {
+          // Estratégia 2: Clicar pelo atributo data-dismiss
+          try {
+            await this.page.click('button[data-dismiss="modal"]', { timeout: 1000 });
+            await this.page.waitForTimeout(1000);
+          } catch {
+            // Estratégia 3: Usar ESC
+            await this.page.keyboard.press('Escape');
+            await this.page.waitForTimeout(800);
+          }
         }
       } catch (error) {
-        // Tentar fechar com ESC se botão não for encontrado
-        await this.page.keyboard.press('Escape');
-        await this.page.waitForTimeout(500);
+        console.warn('Não foi possível fechar o modal automaticamente');
       }
 
       spinner.succeed(`${programas.length} programas carregados!`);
