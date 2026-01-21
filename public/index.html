@@ -45,10 +45,10 @@
                     <div class="form-group">
                         <label>🎯 Programa Sebrae</label>
                         <div class="form-row">
-                            <select id="programaId" class="form-row-flex" disabled aria-label="Selecione o programa">
+                            <select id="programaId" class="form-row-flex" disabled aria-label="Selecione o programa" onfocus="carregarProgramasSeNecessario()">
                                 <option value="">Inicie o navegador para carregar programas...</option>
                             </select>
-                            <button type="button" class="btn btn-primary nowrap" id="btnNovoPrograma" onclick="abrirModalPrograma()" disabled>
+                            <button type="button" class="btn btn-primary nowrap" id="btnNovoPrograma" onclick="verificarEAbrirModal()" disabled>
                                 ➕ Novo Programa
                             </button>
                         </div>

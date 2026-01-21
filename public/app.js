@@ -1,5 +1,27 @@
 let secaoCount = 0;
 let navegadorIniciado = false;
+let programasCarregados = false;
+
+// Carregar programas apenas se necessário
+async function carregarProgramasSeNecessario() {
+    if (!navegadorIniciado) {
+        showNotification('⚠️ Inicie o navegador primeiro', 'error');
+        return;
+    }
+    
+    if (!programasCarregados) {
+        await carregarProgramas();
+    }
+}
+
+// Verificar navegador e abrir modal
+function verificarEAbrirModal() {
+    if (!navegadorIniciado) {
+        showNotification('⚠️ Inicie o navegador primeiro', 'error');
+        return;
+    }
+    abrirModalPrograma();
+}
 
 // Iniciar automação
 async function iniciarAutomacao() {
@@ -48,6 +70,7 @@ async function carregarProgramas() {
             
             select.disabled = false;
             document.getElementById('btnNovoPrograma').disabled = false;
+            programasCarregados = true;
             showNotification(`✅ ${data.programas.length} programas carregados`, 'success');
         } else {
             showNotification('⚠️ ' + data.message, 'error');
@@ -99,6 +122,7 @@ async function criarNovoPrograma() {
             showNotification('✅ ' + data.message, 'success');
             
             // Recarregar programas
+            programasCarregados = false;
             await carregarProgramas();
             
             // Selecionar o programa recém-criado
