@@ -140,14 +140,15 @@ export class SebraeAutomation {
       // Salvar no cache
       this.programasCache = programas;
 
-      // Fechar modal
+      // Fechar modal para voltar à tela inicial
       try {
-        const btnFechar = await this.page.waitForSelector('button[data-dismiss="modal"], button[data-action="fechar"]', { timeout: 2000 });
+        const btnFechar = await this.page.waitForSelector('.modal-footer button[data-dismiss="modal"]', { timeout: 2000 });
         if (btnFechar) {
           await btnFechar.click();
-          await this.page.waitForTimeout(500);
+          await this.page.waitForTimeout(800);
         }
       } catch (error) {
+        // Tentar fechar com ESC se botão não for encontrado
         await this.page.keyboard.press('Escape');
         await this.page.waitForTimeout(500);
       }
