@@ -672,6 +672,10 @@ export class SebraeAutomation {
   async close() {
     if (this.browser) {
       await this.browser.close();
+      this.browser = null;
+      this.context = null;
+      this.page = null;
+      this.programasCache = null; // Limpar cache ao fechar
     }
   }
 }

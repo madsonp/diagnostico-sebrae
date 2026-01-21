@@ -23,13 +23,24 @@ let automation: SebraeAutomation | null = null;
 // Iniciar automação
 app.post('/api/iniciar', async (req, res) => {
   try {
-    if (!automation) {
-      automation = new SebraeAutomation();
-      await automation.init();
-      await automation.login();
+    // Fechar automação existente se houver
+    if (automation) {
+      try {
+        await automation.close();
+      } catch (e) {
+        console.log('Erro ao fechar automação anterior:', e);
+      }
+      automation = null;
     }
+    
+    // Criar nova instância
+    automation = new SebraeAutomation();
+    await automation.init();
+    await automation.login();
+    
     res.json({ success: true, message: 'Navegador iniciado e login realizado' });
   } catch (error: any) {
+    automation = null;
     res.status(500).json({ success: false, message: error.message });
   }
 });
