@@ -77,8 +77,20 @@ export class SebraeAutomation {
       const submitSelector = this.selectors?.login.submitButton || 
         'button[type="submit"], input[type="submit"], button:has-text("Entrar"), button:has-text("Login")';
 
-      await this.page.click(submitSelector);
-      await this.page.waitForLoadState('networkidle');
+      // Clicar e aguardar navegação
+      await Promise.all([
+        this.page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
+        this.page.click(submitSelector)
+      ]);
+
+      // Aguardar um pouco mais para garantir que está logado
+      await this.page.waitForTimeout(2000);
+      
+      // Verificar se chegou na página admin
+      const currentUrl = this.page.url();
+      if (!currentUrl.includes('/admin')) {
+        throw new Error('Login falhou - não chegou à página admin');
+      }
 
       spinner.succeed('Login realizado com sucesso!');
     } catch (error) {
