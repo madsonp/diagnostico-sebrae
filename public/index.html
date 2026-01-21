@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criador de Formulários - Diagnóstico SEBRAE</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Criador de Formulários</h1>
+            <p>Sistema automatizado de criação de diagnósticos SEBRAE</p>
+        </div>
+
+        <div class="content">
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">Navegador desconectado</span>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-success" id="btnIniciar" onclick="iniciarAutomacao()">▶️ Iniciar Navegador</button>
+                    <button type="button" class="btn btn-danger btn-hidden" id="btnFechar" onclick="fecharAutomacao()">⏹️ Fechar</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button type="button" class="tab active" onclick="switchTab('novo')">➕ Novo Formulário</button>
+                <button type="button" class="tab" onclick="switchTab('templates')">📁 Templates</button>
+            </div>
+
+            <div id="tab-novo" class="tab-content active">
+                <form id="formFormulario">
+                    <div class="form-group">
+                        <label>📝 Título da Avaliação</label>
+                        <input type="text" id="titulo" required placeholder="Ex: Diagnóstico Empresarial">
+                    </div>
+
+                    <div class="form-group">
+                        <label>📄 Descrição</label>
+                        <textarea id="descricao" placeholder="Descreva o objetivo desta avaliação"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🎯 Programa Sebrae</label>
+                        <div class="form-row">
+                            <select id="programaId" class="form-row-flex" disabled aria-label="Selecione o programa">
+                                <option value="">Inicie o navegador para carregar programas...</option>
+                            </select>
+                            <button type="button" class="btn btn-primary nowrap" id="btnNovoPrograma" onclick="abrirModalPrograma()" disabled>
+                                ➕ Novo Programa
+                            </button>
+                        </div>
+                        <small class="form-hint">
+                            Selecione o programa ao qual este diagnóstico será vinculado
+                        </small>
+                    </div>
+
+                    <h3 class="section-title">📂 Temas (Seções)</h3>
+                    <div id="secoes"></div>
+                    <button type="button" class="btn btn-primary" onclick="adicionarSecao()">➕ Adicionar Tema</button>
+
+                    <div class="submit-container">
+                        <button type="submit" class="btn btn-success btn-submit-large">
+                            🚀 Criar Formulário
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="tab-templates" class="tab-content">
+                <h3>Templates Disponíveis</h3>
+                <div class="templates-grid" id="templatesGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Processando... Aguarde</p>
+    </div>
+
+    <div class="notification" id="notification">
+        <p id="notificationText"></p>
+    </div>
+
+    <!-- Modal Novo Programa -->
+    <div id="modalPrograma" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">➕ Criar Novo Programa</h3>
+            
+            <div class="form-group">
+                <label>Nome do Programa *</label>
+                <input type="text" id="modalProgramaNome" placeholder="Ex: Programa de Inovação 2026" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Descrição (opcional)</label>
+                <textarea id="modalProgramaDescricao" placeholder="Descrição do programa" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="modalProgramaAtivo" checked> Programa ativo
+                </label>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="fecharModalPrograma()">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="criarNovoPrograma()">✅ Criar Programa</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

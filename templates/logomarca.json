@@ -1,0 +1,35 @@
+{
+  "titulo": "Sua empresa possui logomarca?",
+  "descricao": "Para qualificar se sua empresa possui uma identidade visual.",
+  "programaId": "611",
+  "secoes": [
+    {
+      "titulo": "Qualificação",
+      "perguntas": [
+        {
+          "tipo": "resposta-unica",
+          "pergunta": "Qual seu porte?",
+          "obrigatoria": true,
+          "opcoes": [
+            {
+              "nome": "Empresa",
+              "pontos": 1
+            },
+            {
+              "nome": "Produtor Rural",
+              "pontos": 1
+            },
+            {
+              "nome": "Artesão",
+              "pontos": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "configuracoes": {
+    "permitirEdicao": false,
+    "mostrarProgresso": false
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "login": {
+    "username": "input[name='LoginForm[username]']",
+    "password": "input[name='LoginForm[password]']",
+    "submitButton": "button[type='submit']"
+  },
+  "menu": {
+    "diagnosticos": "a:has(span:text('Diagnósticos'))",
+    "programas": "a[href='/admin/programas']",
+    "avaliacoes": "a[href='/admin/avaliacoes']",
+    "bonus": "a[href='/admin/bonus']"
+  },
+  "avaliacao": {
+    "btnInserir": "a#avaliacao-create",
+    "programaSelect": "select#avaliacoes-programa_id",
+    "nome": "input#avaliacoes-nome",
+    "tipoSelect": "select#avaliacoes-tipo_id",
+    "btnCadastrar": "button[type='submit']:has-text('Cadastrar nova avaliação')",
+    "abaAvaliacoes": "a:has-text('Avaliação')",
+    "abaTemas": "a[href='#tabAvaliacao-tab4']",
+    "abaConfiguracoes": "a:has-text('Configurações')",
+    "abaDevolutiva": "a:has-text('Devolutiva')",
+    "btnSalvar": "button:has-text('Salvar')",
+    "btnVoltar": "button:has-text('Voltar')"
+  },
+  "tema": {
+    "btnAdicionar": "a[data-action='adicionar-novo-tema']",
+    "nome": "input#avaliacaotemas-nome",
+    "ativo": "input#avaliacaotemas-ativo",
+    "devolutiva": "input#avaliacaotemas-devolutiva",
+    "ordem": "input#avaliacaotemas-ordem",
+    "descricao": "input#avaliacaotemas-descricao",
+    "descricaoSolucao": "input#avaliacaotemas-descricao_solucao",
+    "btnSalvar": ".modal-footer button[type='submit'].btn.blue-light"
+  },
+  "pergunta": {
+    "btnAdicionar": "a.btn.blue-light:has-text('Adicionar Pergunta')",
+    "tipoSelect": "select#perguntas-pergunta_tipo_id",
+    "temaSelect": "select#perguntas-tema_id",
+    "titulo": "input#perguntas-titulo",
+    "ordem": "input#perguntas-ordem",
+    "textoComplementar": "input#perguntas-texto_complementar",
+    "assunto": "input#perguntas-assunto",
+    "ativo": "input#perguntas-ativo",
+    "obrigatoria": "input:has-text('A pergunta é obrigatória?')",
+    "btnSalvar": ".modal-footer button[type='submit'].btn.blue-light",
+    "btnClonar": "button:has-text('Clonar')",
+    "btnExcluir": "button:has-text('Excluir')",
+    "abaRespostas": "a[href='#tabAvaliacaoPergunta-tab1']",
+    "abaEvidencias": "a:has-text('Evidências')"
+  },
+  "opcaoResposta": {
+    "btnNovaOpcao": "a#nova-opcao",
+    "pontos": "input[id^='perguntaOpcoes'][id$='-pontos']",
+    "nome": "input[id^='perguntaOpcoes'][id$='-nome']",
+    "btnSalvar": "button[type='submit']:has-text('Salvar')"
+  },
+  "tiposPergunta": {
+    "respostaUnica": "1",
+    "textoCurto": "3",
+    "textoLongo": "4",
+    "escalaLinearLivre": "6",
+    "multiplasRespostas": "7",
+    "simNao": "8",
+    "escala1a5": "9",
+    "escala1a10": "10",
+    "gradeMultiplaEscolha": "11",
+    "gradeTipoColuna": "12",
+    "listaSuspensa": "13",
+    "aceiteTermos": "14"
+  }
+}

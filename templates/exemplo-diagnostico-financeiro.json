@@ -1,0 +1,105 @@
+{
+  "titulo": "Diagnóstico Financeiro Empresarial",
+  "descricao": "Avaliação da saúde financeira e gestão de recursos da empresa",
+  "programaId": "613",
+  "programaNome": "Radar Financeiro",
+  "categoria": "Finanças",
+  "secoes": [
+    {
+      "titulo": "Informações da Empresa",
+      "descricao": "Dados básicos sobre a organização",
+      "perguntas": [
+        {
+          "tipo": "texto-curto",
+          "pergunta": "Nome da empresa",
+          "obrigatoria": true
+        },
+        {
+          "tipo": "lista-suspensa",
+          "pergunta": "Porte da empresa",
+          "obrigatoria": true,
+          "opcoes": [
+            { "nome": "Microempresa", "pontos": 10 },
+            { "nome": "Pequena Empresa", "pontos": 20 },
+            { "nome": "Média Empresa", "pontos": 30 },
+            { "nome": "Grande Empresa", "pontos": 40 }
+          ]
+        },
+        {
+          "tipo": "resposta-unica",
+          "pergunta": "Tempo de atuação no mercado",
+          "obrigatoria": true,
+          "opcoes": [
+            { "nome": "Menos de 1 ano", "pontos": 5 },
+            { "nome": "1 a 3 anos", "pontos": 10 },
+            { "nome": "3 a 5 anos", "pontos": 15 },
+            { "nome": "5 a 10 anos", "pontos": 20 },
+            { "nome": "Mais de 10 anos", "pontos": 25 }
+          ]
+        }
+      ]
+    },
+    {
+      "titulo": "Gestão Financeira",
+      "descricao": "Práticas de controle e planejamento financeiro",
+      "perguntas": [
+        {
+          "tipo": "escala-1-5",
+          "pergunta": "Como você avalia o controle financeiro da sua empresa?",
+          "obrigatoria": true
+        },
+        {
+          "tipo": "multiplas-respostas",
+          "pergunta": "Quais ferramentas de gestão financeira você utiliza?",
+          "obrigatoria": true,
+          "opcoes": [
+            { "nome": "Planilhas Excel" },
+            { "nome": "Software de gestão financeira" },
+            { "nome": "Sistema ERP" },
+            { "nome": "Controle manual" },
+            { "nome": "Não utilizo ferramentas específicas" }
+          ]
+        },
+        {
+          "tipo": "resposta-unica",
+          "pergunta": "Com que frequência você analisa o fluxo de caixa?",
+          "obrigatoria": true,
+          "opcoes": [
+            { "nome": "Diariamente", "pontos": 25 },
+            { "nome": "Semanalmente", "pontos": 20 },
+            { "nome": "Mensalmente", "pontos": 15 },
+            { "nome": "Trimestralmente", "pontos": 10 },
+            { "nome": "Raramente ou nunca", "pontos": 0 }
+          ]
+        }
+      ]
+    },
+    {
+      "titulo": "Endividamento e Crédito",
+      "descricao": "Situação de dívidas e acesso a crédito",
+      "perguntas": [
+        {
+          "tipo": "resposta-unica",
+          "pergunta": "A empresa possui dívidas atualmente?",
+          "obrigatoria": true,
+          "opcoes": [
+            { "nome": "Sim, elevadas", "pontos": 0 },
+            { "nome": "Sim, moderadas", "pontos": 10 },
+            { "nome": "Sim, mas baixas", "pontos": 20 },
+            { "nome": "Não possui dívidas", "pontos": 30 }
+          ]
+        },
+        {
+          "tipo": "texto-longo",
+          "pergunta": "Quais são os principais desafios financeiros que sua empresa enfrenta?",
+          "textoComplementar": "Descreva brevemente os principais obstáculos",
+          "obrigatoria": false
+        }
+      ]
+    }
+  ],
+  "configuracoes": {
+    "permitirEdicao": true,
+    "mostrarProgresso": true
+  }
+}
