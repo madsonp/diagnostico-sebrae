@@ -511,14 +511,28 @@ export class SebraeAutomation {
     try {
       // Clicar em Adicionar Pergunta
       console.log('      🔍 Procurando botão Adicionar Pergunta...');
+      await this.screenshot('antes-adicionar-pergunta');
+      
       const btnAdicionar = this.selectors?.pergunta.btnAdicionar || 'a.btn.blue-light:has-text("Adicionar Pergunta")';
-      await this.page.waitForSelector(btnAdicionar, { state: 'visible', timeout: 5000 });
+      
+      try {
+        await this.page.waitForSelector(btnAdicionar, { state: 'visible', timeout: 10000 });
+        console.log('      ✓ Botão Adicionar Pergunta encontrado');
+      } catch (error) {
+        console.log('      ⚠️  Botão Adicionar Pergunta não encontrado, tirando screenshot...');
+        await this.screenshot('erro-botao-adicionar-pergunta-nao-encontrado');
+        throw new Error(`Botão Adicionar Pergunta não encontrado. Seletor usado: ${btnAdicionar}`);
+      }
+      
       await this.page.click(btnAdicionar);
-      await this.page.waitForTimeout(2000);
-      console.log('      ✓ Modal de pergunta aberto');
+      await this.page.waitForTimeout(3000);
+      console.log('      ✓ Clicado em Adicionar Pergunta');
+      await this.screenshot('apos-clicar-adicionar-pergunta');
 
       // Aguardar formulário carregar
-      await this.page.waitForSelector('select#perguntas-pergunta_tipo_id', { state: 'visible', timeout: 5000 });
+      console.log('      🔍 Aguardando formulário de pergunta carregar...');
+      await this.page.waitForSelector('select#perguntas-pergunta_tipo_id', { state: 'visible', timeout: 15000 });
+      console.log('      ✓ Formulário de pergunta carregado');
 
       // Mapear tipo de pergunta
       console.log(`      ✏️  Selecionando tipo: ${pergunta.tipo}`);
@@ -548,10 +562,12 @@ export class SebraeAutomation {
       
       // Aguardar modal footer estar visível
       try {
-        await this.page.waitForSelector('.modal-footer', { state: 'visible', timeout: 10000 });
+        await this.page.waitForSelector('.modal-footer', { state: 'visible', timeout: 15000 });
         console.log('      ✓ Modal footer encontrado');
       } catch (error) {
-        console.log('      ⚠️  Modal footer não encontrado, tentando salvar mesmo assim...');
+        console.log('      ⚠️  Modal footer não encontrado após 15s');
+        await this.screenshot('erro-modal-footer-nao-encontrado');
+        console.log('      🔍 Tentando localizar modal ou botão Salvar de qualquer forma...');
       }
       
       // Tentar múltiplos seletores
@@ -559,14 +575,17 @@ export class SebraeAutomation {
         '.modal-footer button[type="submit"].btn.blue-light',
         '.modal-footer button.btn.blue-light',
         'button[type="submit"].btn.blue-light:visible',
-        '.modal.show button[type="submit"]'
+        '.modal.show button[type="submit"]',
+        '.modal-footer button[type="submit"]',
+        'button.btn.blue-light:has-text("Salvar")',
+        '.modal button:has-text("Salvar")'
       ];
       
       let salvou = false;
       for (const seletor of seletoresSalvar) {
         try {
           console.log(`      🔍 Tentando salvar com seletor: ${seletor}`);
-          const btn = await this.page.waitForSelector(seletor, { state: 'visible', timeout: 3000 });
+          const btn = await this.page.waitForSelector(seletor, { state: 'visible', timeout: 5000 });
           if (btn) {
             await btn.click();
             await this.page.waitForTimeout(3000);
@@ -575,6 +594,7 @@ export class SebraeAutomation {
             break;
           }
         } catch (error) {
+          console.log(`      ⚠️  Seletor ${seletor} não funcionou`);
           continue;
         }
       }
