@@ -230,7 +230,59 @@ await this.page.waitForTimeout(2000); // 2 segundos
 private programasCache: Programa[] | null = null;
 ```
 
-## 🐛 Troubleshooting
+## �️ Robustez e Confiabilidade
+
+### Tratamento Avançado de Erros
+
+O sistema implementa múltiplas estratégias para garantir a criação bem-sucedida dos formulários:
+
+#### 🔄 Timeouts Otimizados
+- **Botão Adicionar Pergunta**: 10 segundos (aumentado de 5s)
+- **Modal Footer**: 15 segundos (aumentado de 10s)
+- **Seletores de Salvamento**: 5 segundos cada (aumentado de 3s)
+- **Timeout padrão**: 30 segundos (configurável via .env)
+
+#### 🎯 Múltiplos Seletores Alternativos
+
+O sistema tenta até **7 seletores diferentes** para o botão Salvar:
+1. `.modal-footer button[type="submit"].btn.blue-light`
+2. `.modal-footer button.btn.blue-light`
+3. `button[type="submit"].btn.blue-light:visible`
+4. `.modal.show button[type="submit"]`
+5. `.modal-footer button[type="submit"]`
+6. `button.btn.blue-light:has-text("Salvar")`
+7. `.modal button:has-text("Salvar")`
+
+#### 📸 Screenshots Automáticos
+
+Screenshots são capturados automaticamente em pontos críticos:
+- `antes-adicionar-pergunta` - Antes de clicar em Adicionar Pergunta
+- `apos-clicar-adicionar-pergunta` - Após clicar no botão
+- `antes-salvar-pergunta` - Antes de tentar salvar
+- `erro-modal-footer-nao-encontrado` - Se modal não for encontrado
+- `erro-botao-adicionar-pergunta-nao-encontrado` - Se botão não for encontrado
+- `erro-salvar-pergunta` - Se falhar ao salvar
+
+Todos os screenshots são salvos em `screenshots/` com timestamp.
+
+#### 📝 Logging Detalhado
+
+Console mostra cada etapa da execução:
+```
+🔍 Procurando botão Adicionar Pergunta...
+✓ Botão Adicionar Pergunta encontrado
+✓ Clicado em Adicionar Pergunta
+🔍 Aguardando formulário de pergunta carregar...
+✓ Formulário de pergunta carregado
+✏️  Selecionando tipo: resposta-unica
+✏️  Preenchendo título: Sua empresa possui uma logomarca?
+💾 Procurando botão Salvar no modal...
+✓ Modal footer encontrado
+🔍 Tentando salvar com seletor: .modal-footer button[type="submit"].btn.blue-light
+✓ Pergunta salva
+```
+
+## �🐛 Troubleshooting
 
 ### ❌ Erro de login
 
