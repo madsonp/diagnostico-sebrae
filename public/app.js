@@ -27,7 +27,7 @@ function verificarEAbrirModal() {
 async function iniciarAutomacao() {
     showLoading();
     try {
-        const response = await fetch('http://localhost:3000/api/iniciar', {
+        const response = await fetch('/api/iniciar', {
             method: 'POST'
         });
         const data = await response.json();
@@ -54,7 +54,7 @@ async function iniciarAutomacao() {
 // Carregar programas disponíveis
 async function carregarProgramas() {
     try {
-        const response = await fetch('http://localhost:3000/api/programas');
+        const response = await fetch('/api/programas');
         const data = await response.json();
         
         if (data.success) {
@@ -106,7 +106,7 @@ async function criarNovoPrograma() {
     fecharModalPrograma();
     
     try {
-        const response = await fetch('http://localhost:3000/api/criar-programa', {
+        const response = await fetch('/api/criar-programa', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -142,7 +142,7 @@ async function criarNovoPrograma() {
 // Fechar automação
 async function fecharAutomacao() {
     try {
-        await fetch('http://localhost:3000/api/fechar', { method: 'POST' });
+        await fetch('/api/fechar', { method: 'POST' });
         navegadorIniciado = false;
         updateStatus(false, 'Navegador desconectado');
         document.getElementById('btnIniciar').style.display = 'inline-block';
@@ -167,11 +167,11 @@ function updateStatus(active, text) {
 }
 
 // Trocar aba
-function switchTab(tab) {
+function switchTab(tab, evt) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     
-    event.target.classList.add('active');
+    evt.target.classList.add('active');
     document.getElementById('tab-' + tab).classList.add('active');
     
     if (tab === 'templates') {
@@ -212,6 +212,7 @@ function adicionarSecao() {
 
 // Remover seção
 function removerSecao(id) {
+    if (!confirm('Tem certeza que deseja remover este tema e todas as suas perguntas?')) return;
     document.getElementById(`secao-${id}`).remove();
 }
 
@@ -266,6 +267,7 @@ function adicionarPergunta(secaoId) {
 
 // Remover pergunta
 function removerPergunta(id) {
+    if (!confirm('Tem certeza que deseja remover esta pergunta?')) return;
     document.getElementById(`pergunta-${id}`).remove();
 }
 
@@ -282,13 +284,13 @@ function toggleOpcoes(perguntaId) {
 // Adicionar opção
 function adicionarOpcao(perguntaId) {
     const opcoesListDiv = document.getElementById(`opcoes-list-${perguntaId}`);
-    const opcaoId = Date.now() + Math.random();
+    const opcaoId = Date.now().toString() + Math.floor(Math.random() * 100000);
     
     const opcaoHtml = `
         <div class="option-item" id="opcao-${opcaoId}">
             <input type="text" class="opcao-nome" placeholder="Nome da opção" style="flex: 2;">
             <input type="number" class="opcao-pontos" placeholder="Pontos" style="flex: 1;">
-            <button type="button" class="btn-remove" onclick="removerOpcao(${opcaoId})">🗑️</button>
+            <button type="button" class="btn-remove" onclick="removerOpcao('${opcaoId}')">🗑️</button>
         </div>
     `;
     
@@ -314,7 +316,7 @@ document.getElementById('formFormulario').addEventListener('submit', async (e) =
     try {
         const formulario = coletarDados();
         
-        const response = await fetch('http://localhost:3000/api/criar-formulario', {
+        const response = await fetch('/api/criar-formulario', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formulario)
@@ -397,7 +399,7 @@ function coletarDados() {
 // Carregar templates
 async function carregarTemplates() {
     try {
-        const response = await fetch('http://localhost:3000/api/templates');
+        const response = await fetch('/api/templates');
         const data = await response.json();
         
         const grid = document.getElementById('templatesGrid');
@@ -420,35 +422,77 @@ async function carregarTemplates() {
 
 // Carregar template específico
 async function carregarTemplate(nome) {
-    if (!navegadorIniciado) {
-        showNotification('❌ Inicie o navegador primeiro!', 'error');
-        return;
-    }
-    
     showLoading();
     
     try {
-        const response = await fetch(`http://localhost:3000/api/templates/${nome}`);
+        const response = await fetch(`/api/templates/${nome}`);
         const result = await response.json();
         
         if (result.success) {
-            // Enviar direto para criação
-            const createResponse = await fetch('http://localhost:3000/api/criar-formulario', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(result.data)
-            });
+            const data = result.data;
             
-            const createData = await createResponse.json();
-            
-            if (createData.success) {
-                showNotification('✅ Template criado com sucesso!', 'success');
-            } else {
-                showNotification('❌ ' + createData.message, 'error');
+            // Preencher campos básicos
+            document.getElementById('titulo').value = data.titulo || '';
+            document.getElementById('descricao').value = data.descricao || '';
+            if (data.programaId) {
+                document.getElementById('programaId').value = data.programaId;
             }
+            
+            // Limpar seções existentes
+            document.getElementById('secoes').innerHTML = '';
+            secaoCount = 0;
+            
+            // Criar seções do template
+            if (data.secoes && Array.isArray(data.secoes)) {
+                data.secoes.forEach(secao => {
+                    adicionarSecao();
+                    const secaoDiv = document.getElementById(`secao-${secaoCount}`);
+                    secaoDiv.querySelector('.secao-titulo').value = secao.titulo || '';
+                    secaoDiv.querySelector('.secao-descricao').value = secao.descricao || '';
+                    
+                    // Criar perguntas
+                    if (secao.perguntas && Array.isArray(secao.perguntas)) {
+                        secao.perguntas.forEach(pergunta => {
+                            adicionarPergunta(secaoCount);
+                            const perguntasDiv = document.getElementById(`perguntas-${secaoCount}`);
+                            const perguntaDiv = perguntasDiv.lastElementChild;
+                            
+                            perguntaDiv.querySelector('.pergunta-texto').value = pergunta.pergunta || '';
+                            perguntaDiv.querySelector('.pergunta-tipo').value = pergunta.tipo || 'resposta-unica';
+                            perguntaDiv.querySelector('.pergunta-obrigatoria').checked = !!pergunta.obrigatoria;
+                            
+                            // Atualizar visibilidade das opções
+                            const perguntaId = perguntaDiv.id.replace('pergunta-', '');
+                            toggleOpcoes(perguntaId);
+                            
+                            // Preencher opções
+                            if (pergunta.opcoes && Array.isArray(pergunta.opcoes)) {
+                                const opcoesListDiv = document.getElementById(`opcoes-list-${perguntaId}`);
+                                opcoesListDiv.innerHTML = ''; // limpar opção padrão
+                                pergunta.opcoes.forEach(opcao => {
+                                    adicionarOpcao(perguntaId);
+                                    const opcaoDiv = opcoesListDiv.lastElementChild;
+                                    opcaoDiv.querySelector('.opcao-nome').value = opcao.nome || '';
+                                    if (opcao.pontos !== undefined) {
+                                        opcaoDiv.querySelector('.opcao-pontos').value = opcao.pontos;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Mudar para aba do formulário
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('.tab').classList.add('active');
+            document.getElementById('tab-novo').classList.add('active');
+            
+            showNotification(`✅ Template "${nome.replace('.json', '')}" carregado no formulário. Revise e clique em Criar.`, 'success');
         }
     } catch (error) {
-        showNotification('❌ Erro ao processar template', 'error');
+        showNotification('❌ Erro ao carregar template', 'error');
     } finally {
         hideLoading();
     }

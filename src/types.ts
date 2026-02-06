@@ -84,4 +84,5 @@ export interface SelectorMap {
     nome: string;
     btnSalvar: string;
   };
+  tiposPergunta?: Record<string, string>;
 }

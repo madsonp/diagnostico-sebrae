@@ -1,6 +1,8 @@
 import { chromium, Browser, Page, BrowserContext } from 'playwright';
-import type { DiagnosticoForm, SelectorMap } from './types.js';
+import type { DiagnosticoForm, FormSection, FormQuestion, SelectorMap } from './types.js';
 import { config } from './config.js';
+import fs from 'fs/promises';
+import path from 'path';
 import ora from 'ora';
 
 export class SebraeAutomation {
@@ -42,8 +44,6 @@ export class SebraeAutomation {
 
   private async loadSelectors() {
     try {
-      const fs = await import('fs/promises');
-      const path = await import('path');
       const selectorsPath = path.join(process.cwd(), 'src', 'selectors.json');
       const selectorsContent = await fs.readFile(selectorsPath, 'utf-8');
       this.selectors = JSON.parse(selectorsContent) as SelectorMap;
@@ -83,8 +83,8 @@ export class SebraeAutomation {
         this.page.click(submitSelector)
       ]);
 
-      // Aguardar um pouco mais para garantir que está logado
-      await this.page.waitForTimeout(2000);
+      // Aguardar chegar na página admin
+      await this.page.waitForURL('**/admin/**', { timeout: 10000 }).catch(() => {});
       
       // Verificar se chegou na página admin
       const currentUrl = this.page.url();
@@ -115,12 +115,11 @@ export class SebraeAutomation {
       // Navegar diretamente para a página sem clicar nos menus
       const baseUrl = config.url.replace('/admin', '');
       await this.page.goto(`${baseUrl}/admin/avaliacoes`, { waitUntil: 'networkidle' });
-      await this.page.waitForTimeout(500);
 
       // Clicar em Inserir Avaliação
       await this.page.waitForSelector('a#avaliacao-create', { timeout: 5000 });
       await this.page.click('a#avaliacao-create');
-      await this.page.waitForTimeout(1500);
+      await this.page.waitForLoadState('networkidle');
 
       // Aguardar o select de programas estar disponível
       const programaSelector = 'select#avaliacoes-programa_id';
@@ -180,12 +179,11 @@ export class SebraeAutomation {
       // Navegar para página de programas
       const baseUrl = config.url.replace('/admin', '');
       await this.page.goto(`${baseUrl}/admin/programas`, { waitUntil: 'networkidle' });
-      await this.page.waitForTimeout(500);
 
       // Clicar em Inserir Programa
       await this.page.waitForSelector('a#programa-create', { timeout: 5000 });
       await this.page.click('a#programa-create');
-      await this.page.waitForTimeout(1500);
+      await this.page.waitForLoadState('networkidle');
 
       // Aguardar formulário carregar
       await this.page.waitForSelector('input#programas-nome', { timeout: 5000 });
@@ -215,7 +213,7 @@ export class SebraeAutomation {
       // Salvar programa
       await this.page.waitForSelector('.modal-footer button[type="submit"].btn.blue-light', { timeout: 5000 });
       await this.page.click('.modal-footer button[type="submit"].btn.blue-light');
-      await this.page.waitForTimeout(2500);
+      await this.page.waitForLoadState('networkidle');
 
       // Limpar cache de programas para recarregar
       this.programasCache = null;
@@ -362,7 +360,7 @@ export class SebraeAutomation {
     }
   }
 
-  private async criarTema(secao: any, ordem: number) {
+  private async criarTema(secao: FormSection, ordem: number) {
     if (!this.page) return;
 
     const spinner = ora(`Criando tema: ${secao.titulo}...`).start();
@@ -505,7 +503,7 @@ export class SebraeAutomation {
     }
   }
 
-  private async criarPergunta(pergunta: any, ordem: number) {
+  private async criarPergunta(pergunta: FormQuestion, ordem: number) {
     if (!this.page) return;
 
     try {
@@ -619,6 +617,23 @@ export class SebraeAutomation {
   }
 
   private mapearTipoPergunta(tipo: string): string {
+    // Usar mapeamento do selectors.json se disponível
+    if (this.selectors?.tiposPergunta) {
+      const mapaFromSelectors: Record<string, string> = {
+        'resposta-unica': this.selectors.tiposPergunta.respostaUnica || '1',
+        'texto-curto': this.selectors.tiposPergunta.textoCurto || '3',
+        'texto-longo': this.selectors.tiposPergunta.textoLongo || '4',
+        'escala-livre': this.selectors.tiposPergunta.escalaLinearLivre || '6',
+        'multiplas-respostas': this.selectors.tiposPergunta.multiplasRespostas || '7',
+        'sim-nao': this.selectors.tiposPergunta.simNao || '8',
+        'escala-1-5': this.selectors.tiposPergunta.escala1a5 || '9',
+        'escala-1-10': this.selectors.tiposPergunta.escala1a10 || '10',
+        'lista-suspensa': this.selectors.tiposPergunta.listaSuspensa || '13'
+      };
+      return mapaFromSelectors[tipo] || '1';
+    }
+
+    // Fallback hardcoded
     const mapa: Record<string, string> = {
       'resposta-unica': '1',
       'texto-curto': '3',
@@ -633,7 +648,7 @@ export class SebraeAutomation {
     return mapa[tipo] || '1';
   }
 
-  private async adicionarOpcoes(opcoes: any[]) {
+  private async adicionarOpcoes(opcoes: NonNullable<FormQuestion['opcoes']>) {
     if (!this.page) return;
 
     try {
